@@ -84,7 +84,7 @@ export default function ContractRenewalDashboard() {
     e.preventDefault();
     const found = USERS.find((u) => u.email === userEmail && u.pin === userPin);
     if (!found) {
-      setError("Invalid demo credentials. Use one of the user IDs shown on screen.");
+      setError("Invalid credentials. Please check your user ID and PIN.");
       return;
     }
     setSessionUser(found);
@@ -285,25 +285,6 @@ export default function ContractRenewalDashboard() {
                 </CardContent>
               </Card>
             </div>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Demo sign-in credentials</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {USERS.map((u) => (
-                  <div key={u.email} className="flex items-center justify-between rounded-md bg-muted px-3 py-2">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{u.name}</p>
-                      <p className="text-xs text-muted-foreground">{u.role}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">{u.email}</p>
-                      <p className="text-xs font-mono text-foreground">PIN: {u.pin}</p>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
           </div>
 
           {/* Right: Login form */}
@@ -311,7 +292,7 @@ export default function ContractRenewalDashboard() {
             <Card className="w-full">
               <CardHeader>
                 <CardTitle>Sign in</CardTitle>
-                <CardDescription>Use any of the demo users to enter the app.</CardDescription>
+                <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleLogin} className="space-y-4">
