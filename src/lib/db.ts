@@ -19,19 +19,19 @@ export async function getAllRecords(): Promise<ContractRecord[]> {
     .from("records")
     .select("*")
     .order("signedDate", { ascending: false });
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   return data || [];
 }
 
 export async function saveRecord(record: ContractRecord): Promise<boolean> {
   const { error } = await supabase.from("records").upsert(record);
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   return true;
 }
 
 export async function deleteRecord(id: string): Promise<boolean> {
   const { error } = await supabase.from("records").delete().eq("id", id);
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   return true;
 }
 
@@ -41,7 +41,7 @@ export async function uploadAttachment(file: File, recordId: string): Promise<st
   const { error } = await supabase.storage
     .from("attachments")
     .upload(path, file, { upsert: true });
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   const { data } = supabase.storage.from("attachments").getPublicUrl(path);
   return data.publicUrl;
 }

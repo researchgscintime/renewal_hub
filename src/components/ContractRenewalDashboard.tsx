@@ -70,8 +70,9 @@ export default function ContractRenewalDashboard() {
         return left - right;
       });
       setRecords(sorted);
-    } catch {
-      setError("Unable to load records from browser storage.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(`Load failed: ${msg}`);
     } finally {
       setLoading(false);
     }
@@ -183,8 +184,9 @@ export default function ContractRenewalDashboard() {
       await loadRecords();
       setIsDialogOpen(false);
       resetForm();
-    } catch {
-      setError("Unable to save the record.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(`Save failed: ${msg}`);
     } finally {
       setSaving(false);
     }
