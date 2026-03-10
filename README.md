@@ -1,73 +1,97 @@
-# Welcome to your Lovable project
+# GSC Renewal Hub
 
-## Project info
+A contract renewal tracking dashboard for GSC, built with React, Vite, and Supabase.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- **Role-based access** — Admin and Director roles with PIN-based login
+- **Contract records** — Add, edit, and delete renewal contracts
+- **File attachments** — Upload and store supporting documents via Supabase Storage
+- **Search & filter** — Search by client name or filter by director
+- **CSV export** — Export the full register to a CSV file
+- **Summary dashboard** — View total contracts, amounts, and renewal stats
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend** — React 18, TypeScript, Vite
+- **UI** — Tailwind CSS, shadcn/ui
+- **Database** — Supabase (PostgreSQL)
+- **File Storage** — Supabase Storage
+- **Hosting** — Vercel
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js 18+
+- A [Supabase](https://supabase.com) project
+- A [Vercel](https://vercel.com) account
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 1. Clone the repository
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+```bash
+git clone https://github.com/researchgscintime/renewal_hub.git
+cd renewal_hub
+npm install
+```
 
-Follow these steps:
+### 2. Set up environment variables
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Create a `.env` file in the root:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 3. Set up the Supabase database
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Run this SQL in your Supabase **SQL Editor**:
+
+```sql
+CREATE TABLE records (
+  id                  TEXT PRIMARY KEY,
+  client_name         TEXT NOT NULL,
+  contract_amount     NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  signed_date         TEXT,
+  updated_by          TEXT,
+  attachment_name     TEXT DEFAULT '',
+  attachment_type     TEXT DEFAULT '',
+  attachment_data_url TEXT DEFAULT '',
+  notes               TEXT DEFAULT '',
+  created_at          TEXT,
+  updated_at          TEXT
+);
+
+ALTER TABLE records ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all" ON records FOR ALL TO anon USING (true) WITH CHECK (true);
+```
+
+### 4. Set up Supabase Storage
+
+1. Go to **Supabase → Storage** and create a bucket named `attachments` (set to **Public**)
+2. Add these policies on the bucket:
+   - **INSERT** for `anon` role — WITH CHECK: `true`
+   - **SELECT** for `anon` role — USING: `true`
+
+### 5. Run locally
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Deployment (Vercel)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Push the repo to GitHub
+2. Import the project on [Vercel](https://vercel.com)
+3. Add the environment variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)
+4. Deploy
 
-**Use GitHub Codespaces**
+## Users & Roles
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+| Role | Permissions |
+| --- | --- |
+| **Admin** | View all records, add/edit/delete any record, assign to any director |
+| **Director** | View all records, add/edit their own records only |
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+User credentials are managed in `src/lib/constants.ts`.
